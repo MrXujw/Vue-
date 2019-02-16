@@ -1,0 +1,192 @@
+<!DOCTYPE <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>渲染函数&JSX</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="demo">
+        <anchored-heading :level="1">
+            <a href="#">Hello world!</a>
+        </anchored-heading>
+    </div>
+    <div id="demo1">
+        <anchored1-heading :level="1">
+            <a>My world is very profect</a>
+        </anchored1-heading>
+    </div>
+    <div id="demo2">
+        <model-example :value="value" @input="val=>value=val"></model-example>
+        <p>你的名字是{{value}}</p>
+    </div>
+    <div id="demo3">
+        <scoped-example>
+            <template scope="props">
+                <span>{{props.text}}</span>
+            </template>
+        </scoped-example>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>  
+    <script>
+        Vue.component('anchored-heading', {
+            render: function(createElement){
+                return createElement(
+                    'h' + this.level, //标签名称
+                    this.$slots.default //子元素数组
+                )
+            },
+            props: {
+                level: {
+                    type: Number,
+                    required: true
+                }
+            }
+        });
+        new Vue({
+            el: '#demo'
+        });
+
+        var getChildrenTextContent = function (children) {
+            return children.map(function (node) {
+                return node.children
+                    ? getChildrenTextContent(node.children)
+                    : node.text
+            }).join('')
+        }
+        Vue.component('anchored1-heading', {
+            render: function(createElement){
+                var headingId = getChildrenTextContent(this.$slots.default)
+                    .toLowerCase()
+                    .replace(/\W+/g, '-')
+                    .replace(/(^\-|\-$)/g, '')
+                
+                return createElement(
+                    'h' + this.level,
+                    [
+                        createElement('a', {
+                            attrs: {
+                                name: headingId,
+                                href: '#' + headingId
+                            }
+                        }, this.$slots.default)
+                    ]
+                )
+            },
+            props: {
+                level: {
+                    type: Number,
+                    required: true
+                }
+            }
+        });
+        new Vue({
+            el: '#demo1'
+        });
+        Vue.component('example', {
+            props: ['items'],
+            render: function(createElement){
+                if(this.items.length){
+                    return createElement('ul', this.items.map(function(item){
+                        return createElement('li', item.name)
+                    }))
+                }else{
+                    return createElement('p', 'Not items found.')
+                }
+            }
+        })
+        /*重写
+        <ul v-if="items.length">
+            <li v-for="item in items">{{item.name}}</li>
+        </ul>
+        <p v-else>Not items found.</p>
+        */
+        Vue.component('model-example', {
+            props: ['value'],
+            render: function(createElement){
+                var self = this
+                return createElement('input', {
+                    domProps: {
+                        value: self.value
+                    },
+                    on: {
+                        input: function(event){
+                            self.$emit('input', event.target.value)
+                        }
+                    }
+                })
+            }
+        })
+        new Vue({
+            el: '#demo2',
+            data: {
+                value: '徐家伟'
+            }
+        })
+        /*
+        on: {
+            '!click': this.doThisInCaoturingMode,
+            '~keyup': this.doThisOnce,
+            '~!mouseover': this.doThisOnceInCapturingMode
+            keyup: function(event){
+                //如果触发事件的元素不是事件绑定的元素
+                //则返回
+                if(event.target !== event.currentTarget) return
+                //如果按下去的不是enter键或者
+                //没有同时按下shift键
+                //则返回
+                if(!event.shiftKey || event.keyCode !== 13) return
+                //阻止 事件冒泡
+                event.stopPropagation()
+                //阻止该元素默认的keyup事件
+                event.preventDefault()
+                //...
+            }
+        }
+        */
+       //可以通过this.$slots访问静态插槽的内容，得到一个VNodes数组
+       Vue.component('slot-example', {
+           render: function(createElement){
+               //`<div><slot></slot></div>`
+                return createElement('div', this.$slots.default)
+            }
+       })
+
+       //也可以通过this.$scopedSlots访问作用域插槽，得到的是一个返回VNodes的函数
+       Vue.component('scoped-example', {
+           render: function(createElement){
+               //`<div><slot :text="message"></slot></div>`
+               return createElement('div', [
+                   this.$scopedSlots.default({
+                       text: this.message
+                   })
+               ])
+               /*
+               return createElement('div', [
+                   createElement('child', {
+                       //在数据对象中传递'scopedSlots'
+                       //格式：{name: props => VNode | Array<VNode>}
+                        scopedSlots: {
+                            default: function(props){
+                                return createElement('span', props.text)
+                            }
+                        }
+                    })
+               ])
+               */
+           },
+            data: function(){
+                return {
+                    message: '你好'
+                }
+            }
+       })
+       new Vue({
+            el: '#demo3'
+       })
+
+       
+    </script>
+</body>
+</html>

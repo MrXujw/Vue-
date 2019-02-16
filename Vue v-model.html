@@ -1,0 +1,121 @@
+<!DOCTYPE <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Vue v-model</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <!--v-model本质上只是一个语法糖-->
+    <div id="example">
+        <input v-model="message" placeholder="edit me">
+        <p>Message is: {{ message }}</p>
+    </div>
+    <div id="textarea">
+        <span>Multiline message is:</span>
+        <p style="white-space: pre-line;">{{message}}</p>
+        <br>
+        <textarea v-model="message" placeholder="add multiple lines"></textarea>
+    </div>    
+    <div id="multiple-select">
+        <input type="checkbox" id="checkbox" v-model="toggle" true-value="yes" false-value="no">
+        <label for="checkbox">{{toggle}}</label>
+    </div>
+    <div id="mutiples-select">
+        <input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
+        <label for="jack">Jack</label>
+        <input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
+        <label for="mike">Mike</label>
+        <input type="checkbox" id="mary" value="Mary" v-model="checkedNames">
+        <label for="mary">Mary</label>
+        <br>
+        <span>Checked names: {{checkedNames}}</span>
+    </div>
+    <div id="radio-select">
+        <input type="radio" id="one" value="One" v-model="picked">
+        <label for="one">One</label>
+        <br>
+        <input type="radio" id="two" value="Two" v-model="picked">
+        <label for="two">two</label>
+        <br>
+        <span>Picked: {{picked}}</span>
+    </div>
+    <div id="select-label">
+        <select v-model="selected" multiple>
+            <option disabled value="">请选择</option>
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+            <option>D</option>
+            <option v-bind:value="{number: 123}">123</option>
+        </select>
+        <span>Selected: {{selected}}</span>
+    </div>
+    <div id="v-for">
+        <select v-model="selected">
+            <option v-for="option in options" v-bind:value="option.value">
+                {{option.text}}
+            </option>
+        </select>
+        <span>Selected: {{selected}}</span>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el: '#example',
+            data: {
+                message: ''
+            }
+        })
+        
+        let vm1 = new Vue({
+            el: '#textarea',
+            data: {
+                message: ''
+            }
+        })
+
+        let vm2 = new Vue({
+            el: '#multiple-select',
+            data: {
+                toggle: 'no'
+            }
+        })
+
+        let vm3 = new Vue({
+            el: '#mutiples-select',
+            data: {
+                checkedNames: []
+            }
+        })
+
+        new Vue({
+            el: '#radio-select',
+            data: {
+                picked: ''
+            }
+        })
+
+        new Vue({
+            el: '#select-label',
+            data: {
+                selected: []
+            }
+        })
+        
+        new Vue({
+            el: '#v-for',
+            data: {
+                selected: 'A',
+                options: [
+                    {text: 'One', value: 'A'},
+                    {text: 'Two', value: 'B'},
+                    {text: 'Three', value: 'C'},
+                    {text: 'Four', value: 'D'}
+                ]
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Vue自定义事件</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="app-demo">
+        <base-checkbox v-model="lovingVue"></base-checkbox>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>  
+    <script>
+        Vue.component('base-checkbox', {
+            model: {
+                prop: 'checked',
+                event: 'change'
+            },
+            props: {
+                checked: Boolean
+            },
+            template: `
+                <input
+                    type="checkbox"
+                    v-bind:checked="checked"
+                    v-on:change="$emit('change'. $event.target.checked)"
+                >
+            `
+        })
+        new Vue({
+            el: '#app-demo',
+            data: {
+                lovingVue: true
+            }
+        })
+
+        //为了将原生事件绑定到组件上，在一个组建的根元素直接监听一个原生事件
+        //除了v-on的.native修饰符外，还可以用Vue提供的$listeners属性
+        Vue.component('base-input', {
+            inheritAttrs: false,
+            props: ['label', 'value'],
+            computed: {
+                inputListeners: function(){
+                    let vm = this
+                    //`Object.assign`将所有的对象合并为一个新对象
+                    return Object.assign({},
+                        //我们从父级添加所有的监听器
+                        this.$listeners,
+                        //然后我们添加自定义监听器，
+                        //或者覆盖一些监听器的行为
+                        {
+                            //这里确保组建配合`v-model`的工作
+                            input: function(event){
+                                vm.$emit('input', event.target.value)
+                            }
+                        }
+                    )
+                }
+            },
+            template: `
+                <label>
+                    {{ label }}
+                    <input
+                        v-bind="$attrs"
+                        v-bind:value="value"
+                        v-on="inputListeners"
+                    >
+                </label>
+            `
+        })
+    </script>
+</body>
+</html>

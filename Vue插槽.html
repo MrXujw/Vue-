@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Vue插槽</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="slot-demo">
+        <navigation-link url="/profile">
+            <!--
+                添加一个Font Awesome图标
+                <span class="fa fa-user"></span>
+                添加一个图表的组件
+                <font-awesome-icon name="user"></font-awesome-icon>
+            -->
+            Your Profile
+        </navigation-link>
+    </div>
+
+    <div id="layout-demo">
+        <base-layout>
+            <h1 slot="header">Here might be a page title</h1>
+            <template slot="main">
+                <p>A paragraph for the main content.</p>
+                <p>And another one.</p>
+            </template>
+
+            <template slot="footer">
+                <p>Here's some contact info</p>
+            </template>
+        </base-layout>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>  
+    <script>
+        Vue.component('navigation-link', {
+            template: `
+                <a
+                    v-bind:href="url"
+                    class="nav-link"
+                >
+                    <slot></slot>
+                </a>
+            `
+        })
+        new Vue({
+            el: '#slot-demo'
+        })
+
+        Vue.component('base-layout', {
+            template: `
+                <div class="container">
+                    <header>
+                        <!--我们希望把页头放在这里-->
+                        <slot name="header"></slot>
+                    </header>
+                    <main>
+                        <!--我们希望把主要内容放这里-->
+                        <slot name="main"></slot>
+                    </main>
+                    <footer>
+                        <!--我们希望把页脚放在这里-->
+                        <slot name="footer"></slot>
+                    </footer>
+                    <button type="submit">
+                        <slot>Submit</slot> //插槽的默认内容，如果父组件为这个插槽提供了内容，则默认的内容会被替换掉
+                    </button>
+                </div>
+            `
+        })
+        new Vue({
+            el: '#layout-demo'
+        })
+    </script>
+</body>
+</html>

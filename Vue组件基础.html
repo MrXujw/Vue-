@@ -1,0 +1,165 @@
+<!DOCTYPE <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Vue组件基础</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .tab-button{
+            padding: 6px 10px;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background: #f0f0f0;
+            margin-bottom: -1px;
+            margin-right: -1px;
+        }
+        .tab-button:hover{
+            background: #e0e0e0;
+        }
+        .tab-button:active{
+            background: #e0e0e0;
+        }
+        .tab{
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="component-demo">
+        <button-counter></button-counter>
+        <button-counter></button-counter>
+    </div>
+    <div id="component-demo1">
+        <div v-bind:style="{ fontSize: postFontSize + 'em' }">
+            <blog-post
+                v-for="post in posts"
+                :key="post.id"
+                :post="post"
+                @enlarge-text="postFontSize += 0.1"
+            ></blog-post>
+        </div>
+    </div>
+    <div id="component-model">
+        <custom-input v-model="searchText"></custom-input>
+    </div>
+    <div id="component-slot">
+        <alert-box>
+            Something bad happened.
+        </alert-box>
+    </div>
+
+    <div id="dynamic-component-demo" class="demo">
+        <button
+            v-for="tab in tabs"
+            :key="tab"
+            :class="['tab-button', { active: currentTab === tab }]"
+            @click="currentTab = tab"
+        >{{tab}}</button>
+        <component
+            :is="currentTabComponent"
+            class="tab"
+        ></component>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        //一个组件的data选项必须是函数，保证每个实例的作用域
+        Vue.component('button-counter', {
+            data: function(){
+                return {
+                    count: 0
+                }
+            },
+            template: '<button v-on:click="count++">You clicked me {{count}} times.</button>'
+        })
+        new Vue({
+            el: '#component-demo'
+        })
+
+        Vue.component('blog-post', {
+            props: ['post'],
+            template: `
+                <div class="blog-post">
+                    <button style="display: inline-block; float:right;"
+                    @click="$emit('enlarge-text', 0.1)"
+                    >
+                        Enlarge text    
+                    </button>
+                    <h3>{{post.title}}</h3>
+                    <div v-html="post.content"></div>
+                    <span>{{post.publishedAt + '--@--' + post.writer}}</span>
+                </div>
+            `
+        })
+        let vm = new Vue({
+            el: '#component-demo1',
+            data: {
+                posts: [
+                    { id: 1, title: 'My journey with Vue', 
+                    content: '一大早，便被母亲叫起。我有些不满，平常我是总要在床上多赖一会儿的。可当我迷迷糊糊的看到母亲紧绷的脸庞时，我好像一瞬间明白了什么，心隐隐的颤抖起来。',
+                    publishedAt: '2019-1-28',
+                    writer: '徐家伟'
+                    },                    
+                    { id: 2, title: 'My favorite object is Vue'},
+                    { id: 3, title: 'Vue is so fun'}
+                ],
+                postFontSize: 1
+            }
+        })
+
+        Vue.component('custom-input', {
+            props: ['value'],
+            template: `
+                <input
+                    :value="value"
+                    @input="$emit('input',$event.target.value)"
+                >
+            `
+        })
+        let vm1 = new Vue({
+            el: '#component-model',
+            data: {
+                value: ''
+            }
+        })
+
+        Vue.component('alert-box', {
+            template: `
+                <div class="demo-alert-box">
+                    <strong>Error!</strong>
+                    <slot></slot>
+                </div>
+            `
+        })
+        let vm2 = new Vue({
+            el: '#component-slot'
+        })
+
+
+        Vue.component('tab-home', {
+            template: '<div>Home component</div>'
+        })
+        Vue.component('tab-posts', {
+            template: '<div>Posts component</div>'
+        })
+        Vue.component('tab-archive', {
+            template: '<div>Archive component</div>'
+        })
+        let vm3 = new Vue({
+            el: '#dynamic-component-demo',
+            data: {
+                currentTab: 'Home',
+                tabs: ['Home', 'Posts', 'Archive']
+            },
+            computed: {
+                currentTabComponent: function(){
+                    return 'tab-' + this.currentTab.toLowerCase()
+                }
+            }
+        })
+    </script>
+</body>
+</html> 

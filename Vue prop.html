@@ -1,0 +1,107 @@
+<!DOCTYPE <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Vue prop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="props-demo">
+        <blog-post v-bind="post"></blog-post>
+    </div>
+    <div id="base-input-demo">
+        <base-input
+            v-model="username"
+            class="username-input"
+            placeholder="Enter your username"
+        ></base-input>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>  
+    <script>
+    //  驼峰式的prop命名在使用DOM的模板是，需要-分隔命名，而在使用字符串模板时，这个限制不存在
+    Vue.component('blog-post', {
+        props: {
+            title: String,
+            likes: Number,
+            isPublished: Boolean,
+            commentIds: Array,
+            author: Object
+        },
+        template: `
+            <h3>{{ title }} by {{ author.name }} {{ likes }} {{ commentIds }} {{ isPublished }}</h3>
+        `
+    })
+    new Vue({
+        el: '#props-demo',
+        data: {
+            post: {
+                title: 'Learning Vue',
+                likes: 22,
+                isPublished: true,
+                commentIds: ['adwd', 12, 'my favorite book'],
+                author: {
+                    name: 'xjw'
+                }
+            }
+        }
+    })
+
+    Vue.component('my-component', {
+        props: {
+            //基础的类型检查（'null'匹配任何类型)
+            propA: Number,
+            //多个可能类型
+            propB: [Number, String],
+            //必填的字符串
+            propC: {
+                type: String,
+                required: true
+            },
+            //带有默认值的数字
+            propD: {
+                type: Number,
+                default: 100
+            },
+            //带有默认值的对象
+            propE: {
+                type: Object,
+                //对象或者数组默认值必须从一个工厂函数获取
+                default: function(){
+                    return { message: 'hello' }
+                }
+            },
+            //自定义验证函数
+            propF: {
+                validator: function(value){
+                    //这个值必须匹配下列字符串中的一个
+                    return ['success', 'warning', 'danger'].indexOf(value) !== -1
+                }
+            }
+        }
+        //当prop验证失败的时候，（开发环境构建版本的）Vue将会产生一个控制台的警告
+    })
+
+    
+
+    //禁用特性继承
+    Vue.component('base-input', {
+        inheritAttrs: false,
+        props: ['label', 'value'],
+        template: `
+            <label>
+                {{ label }}
+                <input
+                    v-bind="$attrs"
+                    v-bind:value="value"
+                    v-on:input="$emit('input', $event.target.value)"
+                >
+            </label>
+        `
+    })
+    new Vue({
+        el: '#base-input-demo'
+    })
+    </script>
+</body>
+</html>

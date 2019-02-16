@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Vue</title>
+    </head>
+    <body>
+        <div id="example" v-bind:style="styleObject">
+            <p>Original message: "{{ message }}"</p>
+            <p>Computed reversed messahe: "{{ reversedMessage }}"</p>
+        </div>
+        <div id="demo">{{ fullName }}</div>
+        <div id="components-demo">
+            <button-counter></button-counter>
+        </div>
+        <div v-if="Math.random() > 0.5">
+            Now you see me
+          </div>
+          <div v-else>
+            Now you don't
+        </div>
+        <h1 v-show="ok">Hello!</h1>
+        <ul id="example-1">
+            <li v-for="(item, index) in items">
+               {{parentMessage}}-{{index}}-{{ item.message }}
+            </li>
+        </ul>
+        <ul id="v-for-object" class="demo">
+            <li v-for="(value, key, index) in object">
+                {{index}}.{{key}}:{{value}}
+            </li>
+        </ul>
+        <ul id="sort">
+            <li v-for="num in evenNumbers">{{ num }}</li>
+            <span v-for='num in 15'>{{ num }}</span>
+        </ul>
+
+        
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script>
+            var vm = new Vue({
+                el: '#example',
+                data: {
+                    message: 'Hello',
+                    styleObject: {
+                        color: 'red',
+                        fontSize: '13px'
+                    }
+                },
+                computed: {
+                    reversedMessage: function(){
+                        return this.message.split('').reverse().join('');
+                    }
+                }
+            })
+            var vm1 = new Vue({
+                el: '#demo',
+                data: {
+                    firstname: 'Foo',
+                    lastname: 'Bar'
+                },
+                computed: {
+                    fullName: {
+                        get: function(){
+                            return this.firstname + ' ' + this.lastname;
+                        },
+                        set: function(newValue){
+                            var names = newValue.split(' ');
+                            this.firstname = names[0];
+                            this.lastname = names[names.length - 1];
+                        }
+                    }
+                }
+            })
+            Vue.component('button-counter', {
+                data: function(){
+                    return {
+                        count: 0
+                    }
+                },
+                template: '<button v-on:click="count++">点我{{ count }}下</button>'
+            })
+            new Vue({ el: '#components-demo' })
+            let example1 = new Vue({
+                el: '#example-1',
+                data: {
+                    parentMessage: 'Parent',
+                    items: [
+                        {message: 'Foo'},
+                        {message: 'Bar'}
+                    ]
+                }
+            })
+            let example2 = new Vue({
+                el: '#v-for-object',
+                data: {
+                    object: {
+                        firstname: 'Mike',
+                        lastname: 'Smithes',
+                        age: 30
+                    }
+                }
+            })
+            Vue.set(example2.object, 'interest', 'football');
+            example2.$set(example2.object, 'birthday', '1997-6-21')
+            example2.object = Object.assign({}, example2.object, {
+                fruit: 'apple',
+                food: 'noodle'
+            })
+            let sort1 = new Vue({
+                el: '#sort',
+                data: {
+                    numbers: [1, 2, 3, 4, 5]
+                },
+                computed: {
+                    evenNumbers: function(){
+                        return this.numbers.filter(function(number){
+                            return number % 2 === 0;
+                        })
+                    }
+                }
+                /*如果computed不能用，就用
+                methods: {
+                    even: function(numbers){
+                        return this.numbers.filter(function(number){
+                            return number % 2 === 0;
+                        })
+                    }
+                }
+                */
+            })
+        </script>
+    </body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Vue状态过渡</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="animated-number-demo">
+        <input v-model.number="number" type="number" step="20">
+        <p> {{animatedNumber}}</p>
+    </div>
+    <div id="hook-arguments-example" v-demo:foo.a.b="message"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenMax.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>  
+    <script>
+        new Vue({
+            el: '#animated-number-demo',
+            data: {
+                number: 0,
+                tweenedNumber: 0
+            },
+            computed: {
+                tweenedNumber: function(){
+                    return this.twwenedNumber.toFixed(0);
+                }
+            },
+            watch: {
+                number: function(newValue){
+                    TweenLite.to(this.$data, 0.5, {tweenedNumber: newValue})
+                }
+            }
+        })
+        Vue.directive('demo', {
+            bind: function(el, binding, vnode){
+                var s = JSON.stringify
+                el.innerHTML = 
+                    'name: '       + s(binding.name) + '<br>' + 
+                    'value: '      + s(binding.value) + '<br>' +
+                    'expression: ' + s(binding.expression) + '<br>' +
+                    'argument: '   + s(binding.arg) + '<br>' +
+                    'modifiers: '  + s(binding.modifiers) + '<br>' +
+                    'vnode keys: ' + Object.keys(vnode).join(', ')
+            }
+        })
+        new Vue({
+            el: '#hook-arguments-example',
+            data: {
+                message: 'hello!'
+            }
+        })
+    </script>
+</body>
+</html>
