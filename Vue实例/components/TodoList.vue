@@ -1,5 +1,5 @@
-<tempalte>
-    <div>
+<template>
+<div>
         <BaseInputText
             v-model="newTodoText"
             placeholder="New todo"
